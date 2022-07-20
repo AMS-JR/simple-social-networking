@@ -7,7 +7,7 @@ This is a simple social networking Scala project which implements some twitter l
 [@AmadouSarjoJallow](https://github.com/AMS-JR).
 
 ## Improvement
--Replace Calender with joda time from java.time library
+-Replace Calender with joda time from java.time library<br/>
 -.....
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
