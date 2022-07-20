@@ -1,0 +1,10 @@
+@(page: String)(implicit session: Session, flash: Flash, request: Request[AnyContent])
+
+<div class="col">
+    <form class="form-inline my-2 my-lg-0" action="@routes.HomeController.search()" method="post" name="searchForm">
+        @helper.CSRF.formField
+        <input type="hidden" name="page" value="@page">
+        <input class="form-control mr-sm-2" type="search" name="search" id="search" placeholder="Username or #hashtag" aria-label="Search">
+        <input class="btn btn-outline-primary my-2 my-sm-0" type="submit" value="Search">
+    </form>
+</div>

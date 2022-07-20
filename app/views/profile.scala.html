@@ -1,0 +1,174 @@
+@import scala.collection.mutable.ListBuffer
+@(Posts: ListBuffer[Map[String, Any]],Comments: ListBuffer[Map[String, Any]],
+        actionCounts: ListBuffer[Map[String, Any]], following: ListBuffer[(String,Int)], followers: ListBuffer[String],
+        current_user: String, other_user: String)(implicit session: Session, flash: Flash, request: Request[AnyContent])
+
+@main("Profile", session) {
+
+    @request.flash.get("info").map{ message =>
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            <strong>@message</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    <div class="mb-5 pb-5">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <h3 class="text-center">Profile</h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                @for(post <- Posts ){
+                    <div class="card my-1 shadow-lg border border-primary">
+                        <div class="card-body">
+                            <div class="row d-flex flex-row align-items-start">
+                                <div class="col">
+                                    <div>
+                                        <div class="row shadow-lg border border-primary">
+                                            <div class="col"><a href="#"><strong>@post("authorName")</strong><br></a></div>
+                                            <div class="col">
+                                                <p>@post("timestamp")</p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col">
+                                                @if(!post("content").toString.isEmpty){
+                                                    <p>@post("content")<br></p>
+                                                }
+                                                @if(!post("picture").toString.isEmpty){
+                                                    <div class="py-2">
+                                                        <img src="@routes.Assets.versioned("tmp/picture/"+post("picture"))" class="card-img-top" style="height: 14rem;" alt="@post("picture")">
+                                                        <br>
+                                                    </div>
+                                                }
+                                                <span class="float-right">@post("hashtag")</span></div>
+                                        </div>
+                                        <div class="row shadow-lg border">
+                                        @for(counter <- actionCounts) {
+                                            @if(counter("postId") == post("id")) {
+                                                <div class="col">
+                                                    <a href="@routes.PostController.comment(post("id").toString, other_user, "home")">
+                                                    <i class="fa fa-commenting-o d-inline" style="font-size: 24px;  font-weight: bold;"></i>
+                                                    </a>
+                                                    <span style="margin-left: 8px;">@counter("commentsCount")</span>
+                                                </div>
+                                                <div class="col">
+                                                    <i class="fa fa-share" style="font-size: 24px; font-weight: bold;"></i>
+                                                    <span style="margin-left: 8px;">@counter("shareCount")</span>
+                                                </div>
+                                                <div class="col" style="margin-left: 0px;">
+                                                    <a href="@routes.PostController.like(post("id").toString, current_user, other_user, "profile")">
+                                                    <i class="fa fa-thumbs-up" style="font-size: 24px; font-weight: bold;"></i>
+                                                    </a>
+                                                    <span style="margin-left: 8px;">@counter("likesCount")</span>
+                                                </div>
+                                            }
+                                        }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col shadow-lg">
+                                    <div>
+                                        <div class="row">
+                                            <div class="col">
+                                                <h2 style="font-size:20px;">Comments:</h2>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                        @for(comment <- Comments){
+                                            @if(comment("postId") == post("id")){
+                                            <div class="col col-md-3">
+                                                <p>@comment("authorName"):</p>
+                                            </div>
+                                            <div class="col col-md-9">
+                                                @if(!comment("content").toString.isEmpty){
+                                                    <p>@comment("content")<br></p>
+                                                }
+                                                @if(!comment("content").toString.isEmpty){
+                                                    <div class="py-2">
+                                                        <img src="@routes.Assets.versioned("tmp/picture/"+comment("picture"))" class="card-img-top"  alt="@comment("picture")">
+                                                        <br>
+                                                    </div>
+                                                }
+                                            </div>
+                                            }
+                                        }
+                                        </div>
+                                        <div class="row">
+                                            <div class="col">
+                                                @if(other_user.isEmpty){
+                                                    <a class="btn btn-danger btn-sm btn-block d-inline float-right" role="button" href="@routes.PostController.removePost(post("id").toString)">Delete post</a>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                </div>
+                <div class="col-md-6">
+                    <div>
+                        <div class="row">
+                            <div class="col shadow-lg">
+                                <section>
+                                    <ul class="list-group py-3">
+                                        <li class="list-group-item">
+                                            <h3>Information<br></h3>
+                                            <ul class="list-unstyled">
+                                            @if(other_user.isEmpty) {
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <strong>Username: </strong>@current_user</li>
+                                            }else{
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <strong>Username: </strong>@other_user</li>
+                                            }
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <strong>@following(2)._1: </strong>
+                                                    <span class="badge bg-primary rounded-pill">@following(2)._2</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <strong>@following(0)._1: </strong>
+                                                    <span class="badge bg-primary rounded-pill">@following(0)._2</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <strong>@following(1)._1: </strong>
+                                                    <span class="badge bg-primary rounded-pill">@following(1)._2</span>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                    <div>
+                                    @if(other_user.isEmpty) {
+                                        <a class="btn btn-danger btn-block btn-sm d-inline float-right" role="button" href="@routes.UserController.destroy()">Delete account</a>
+                                    }else{
+                                        @if(followers.contains(current_user)){
+                                            <a class="btn btn-danger btn-sm btn-block d-inline float-right" role="button" href="@routes.UserController.unfollow(other_user)">
+                                                <i class="fa fa-user-times"></i>
+                                                Unfollow
+                                            </a>
+                                        }else{
+                                            <a class="btn btn-info btn-sm btn-block d-inline float-right" role="button" href="@routes.UserController.follow(other_user)">
+                                                <i class="fa fa-user-plus" aria-hidden="true"></i>
+                                                Follow
+                                            </a>
+                                        }
+                                    }
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

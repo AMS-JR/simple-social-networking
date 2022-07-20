@@ -1,0 +1,96 @@
+@import scala.collection.mutable.ListBuffer
+@(Posts: ListBuffer[Map[String, Any]],Comments: ListBuffer[Map[String, Any]], actionCounts: ListBuffer[Map[String, Any]],
+        current_user: String, page: String)(implicit session: Session, flash: Flash, request: Request[AnyContent])
+
+@for(post <- Posts ){
+    <div class="card my-1 shadow-lg border border-primary">
+        <div class="card-body">
+            <div class="row d-flex flex-row align-items-start">
+                <div class="col">
+                    <div>
+                        <div class="row shadow-lg border border-primary">
+                            <div class="col">
+                                <a href="@routes.UserController.userProfile(post("authorName").toString)">
+                                    <strong>@post("authorName")</strong><br>
+                                </a>
+                            </div>
+                            <div class="col">
+                                <p>@post("timestamp")</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                @if(!post("content").toString.isEmpty){
+                                    <p>@post("content")<br></p>
+                                }
+                                @if(!post("picture").toString.isEmpty){
+                                    <div class="py-2">
+                                        <img src="@routes.Assets.versioned("tmp/picture/"+post("picture"))" class="card-img-top" style="height: 14rem;" alt="@post("picture")">
+                                        <br>
+                                    </div>
+                                }
+                            <span class="float-right">@post("hashtag")</span>
+                            </div>
+                        </div>
+                        <div class="row shadow-lg border">
+                        @for(counter <- actionCounts) {
+                            @if(counter("postId") == post("id")) {
+                                <div class="col">
+                                    <a href="@routes.PostController.comment(post("id").toString, "", page)">
+                                        <i class="fa fa-commenting-o d-inline" style="font-size: 24px;
+                                            font-weight: bold;"></i>
+                                    </a>
+                                    <span style="margin-left: 8px;">@counter("commentsCount")</span>
+                                </div>
+                                <div class="col">
+                                    <a href="@routes.PostController.share(post("id").toString, current_user, page)">
+                                        <i class="fa fa-share" style="font-size: 24px; font-weight: bold;"></i>
+                                    </a>
+                                    <span style="margin-left: 8px;">@counter("shareCount")</span>
+                                </div>
+                                <div class="col" style="margin-left: 0px;">
+                                    <a href="@routes.PostController.like(post("id").toString, current_user, "", page)">
+                                        <i class="fa fa-thumbs-up" style="font-size: 24px; font-weight: bold;"></i>
+                                    </a>
+                                    <span style="margin-left: 8px;">@counter("likesCount")</span>
+
+                                </div>
+                            }
+                        }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col shadow-lg">
+                    <div>
+                        <div class="row">
+                            <div class="col">
+                                <h1 style="font-size:20px;">Comments:</h1>
+                            </div>
+                        </div>
+                        <div class="row">
+                        @for(comment <- Comments){
+                            @if(comment("postId") == post("id")){
+                                <div class="col col-md-3">
+                                    <p>@comment("authorName"):</p>
+                                </div>
+                                <div class="col col-md-9">
+                                    @if(!comment("content").toString.isEmpty){
+                                        <p>@comment("content")<br></p>
+                                    }
+                                    @if(!comment("content").toString.isEmpty){
+                                        <div class="py-2">
+                                            <img src="@routes.Assets.versioned("tmp/picture/"+comment("picture"))" class="card-img-top"  alt="@comment("picture")">
+                                            <br>
+                                        </div>
+                                    }
+                                </div>
+                            }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,62 @@
+@import scala.collection.mutable.ListBuffer
+@(Posts: ListBuffer[Map[String, Any]],Comments: ListBuffer[Map[String, Any]], actionCounts: ListBuffer[Map[String, Any]],
+        hashtags: ListBuffer[String], subscribedHashtags: List[String], topics: ListBuffer[String],
+        current_user: String)(implicit session: Session, flash: Flash, request: Request[AnyContent])
+
+@main("feed", session){
+
+    @request.flash.get("info").map{ message =>
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        <strong>@message</strong>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+<div class="mb-5 pb-5">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="btn-group btn-group-sm" role="group">
+                    <a class="btn btn-outline-primary active btn-sm d-inline" role="button" href="@routes.UserController.feed()">Date</a>
+                    <a class="btn btn-outline-info btn-light btn-sm d-inline" role="button" disabled="disabled" href="@routes.UserController.feedSortByLikes()">Likes</a>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+            @post(Posts,Comments, actionCounts,current_user, "feed")
+            </div>
+            <div class="col-md-6">
+                <div>
+                    <div class="row py-3">
+                        @search("feed")
+                    </div>
+                    <div class="row border border-primary">
+                        <div class="col shadow-lg border py-2 mb-5 bg-white">
+                            <section>
+                                <ul class="list-group shadow-lg">
+                                    <li class="list-group-item"><span>&lt;recent hashtags&gt;</span>
+                                        <ul class="list-unstyled">
+                                        @for(hashtag <- hashtags) {
+                                            <li class="d-flex justify-content-between align-items-center">
+                                                <a href="#">@hashtag</a>
+                                                @if(subscribedHashtags.contains(hashtag)){
+                                                    <span><a href="@routes.UserController.unSubscribe(hashtag)" class="badge badge-warning">Unsubcribe</a></span>
+                                                }else{
+                                                    <span><a href="@routes.UserController.subscribe(hashtag)" class="badge badge-success">subscibe</a></span>
+                                                }
+                                            </li>
+                                        }
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+}

@@ -1,0 +1,62 @@
+@*
+ * This template is called from the `index` template. This template
+ * handles the rendering of the page header and body tags. It takes
+ * two arguments, a `String` for the title of the page and an `Html`
+ * object to insert into the body of the page.
+ *@
+@(title: String, session: Session)(content: Html)
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        @* Here's where we render the page title `String`. *@
+        <title>@title</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("bootstrap/css/styles.min.css")">
+@*        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">*@
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
+
+    </head>
+    <body>
+        <nav class="navbar navbar-light navbar-expand-md">
+            <div class="container-fluid">
+        @if(session.get(models.Global.SESSION_USERNAME_KEY).isEmpty) { <a class="navbar-brand" href="@routes.HomeController.landingPage()">Kijamii</a>
+                } else {
+
+            <a class="navbar-brand" href="@routes.HomeController.index()">
+                <i class="fa fa-home" aria-hidden="true" style="font-size: 24px; "></i>
+            </a>
+            <a class="navbar-brand" href="@routes.HomeController.explore()">Explore</a>
+        }
+            <button class="navbar-toggler" data-toggle="collapse" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navcol-1">
+                    <ul class="nav navbar-nav ml-auto">
+                        @if(session.get(models.Global.SESSION_USERNAME_KEY).isEmpty){
+                            <li class="nav-item" role="presentation"><a class="nav-link" href="@routes.UserController.login()">LogIn</a></li>
+                            <li class="nav-item" role="presentation"><a class="nav-link" href="@routes.UserController.signup()">SignUp</a></li>
+                        } else {
+                            <li class="nav-item" role="presentation"><a class="nav-link active" href="@routes.UserController.feed()">Feed</a></li>
+                            <li class="nav-item" role="presentation"><a class="nav-link active" href="@routes.PostController.create()">Share a thought</a></li>
+                            <li class="nav-item" role="presentation"><a class="nav-link" href="@routes.UserController.profile()">Profile</a></li>
+                            <li class="nav-item" role="presentation"><a class="nav-link" href="@routes.UserController.logout()">Logout</a></li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        @* And here's where we render the `Html` object containing
+         * the page content. *@
+        @content
+    <div class="footer-basic fixed-bottom">
+        <footer>
+            <p class="copyright">Amadou Sarjo Jallow© 2022</p>
+        </footer>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.bundle.min.js"></script>
+    <script src="@routes.Assets.versioned("javascripts/main.js")" type="text/javascript"></script>
+    </body>
+
+</html>

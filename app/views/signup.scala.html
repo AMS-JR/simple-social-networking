@@ -1,0 +1,46 @@
+@(form: Form[models.User])(implicit session: Session, request: MessagesRequestHeader)
+
+@main("Sign Up", session){
+    @request.flash.data.map{ case (name, value) =>
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        <strong>@value</strong>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    }
+    <div class="register-photo">
+        <div class="form-container">
+            <div class="image-holder"></div>
+            @if(form.hasGlobalErrors) {
+                <ul>
+                @for(error <- form.globalErrors) {
+                    <li>@error.message</li>
+                }
+                </ul>
+            }
+            @helper.form(action = routes.UserController.processSignup(), Symbol("id") -> "user-login-form") {
+                @helper.CSRF.formField
+                <h2 class="text-center"><strong>Create</strong> an account.</h2>
+
+                <div class="form-group">
+                    @helper.inputText(
+                        form("username"),
+                        Symbol("id") -> "username",
+                        Symbol("class") -> "form-control",
+                        Symbol("size") -> 25)
+                </div>
+                <div class="form-group">
+                    @helper.inputText(
+                        form("password"),
+                        Symbol("id") -> "password",
+                        Symbol("class") -> "form-control",
+                        Symbol("size") -> 25)
+                </div>
+                <div class="form-group">
+                    <input class="btn btn-success btn-block" type="submit" value="Sign Up">
+                </div>
+            }
+        </div>
+    </div>
+}

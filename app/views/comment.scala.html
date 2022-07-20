@@ -1,0 +1,37 @@
+@(form: Form[(Int, String, String, String, String)])(postId: String, otherUser: String, page: String    )(implicit session: Session, request: MessagesRequestHeader)
+
+@main("comment", session){
+    @request.flash.data.map{ case (name, value) =>
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        <strong>@value</strong>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    }
+    @if(form.hasGlobalErrors) {
+        <ul>
+        @for(error <- form.globalErrors) {
+            <li>@error.message</li>
+        }
+        </ul>
+    }
+    <div class="contact-clean">
+    @helper.form(action = routes.PostController.processComment(), Symbol("enctype") -> "multipart/form-data") {
+        @helper.CSRF.formField
+        <h2 class="text-center">Add a comment</h2>
+        <input type="hidden" name="postId" value="@postId">
+        <input type="hidden" name="otherUser" value="@otherUser">
+        <input type="hidden" name="page" value="@page">
+        <div class="form-group">
+        @helper.textarea(form("content"), Symbol("id") -> "content", Symbol("class") -> "form-control", Symbol("rows") -> 14)
+        </div>
+        <div class="form-group">
+            @helper.inputFile(form("picture"))
+        </div>
+        <div class="form-group">
+            <input class="btn btn-primary btn-block" type="submit" value="ADD">
+        </div>
+    }
+    </div>
+}
